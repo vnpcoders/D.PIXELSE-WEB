@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { registerAutoplayVideo } from "../lib/centerAutoplay.js"
 
-export default function ReelCard({ reel, onOpen, mode = "scroll" }) {
+export default function ReelCard({ reel, onOpen }) {
   const videoRef = useRef(null)
   const [isTouch, setIsTouch] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -13,13 +13,11 @@ export default function ReelCard({ reel, onOpen, mode = "scroll" }) {
   }, [])
 
   useEffect(() => {
-    if (mode !== "scroll" || !isTouch) return
+    if (!isTouch) return
     return registerAutoplayVideo(videoRef.current, { sound: false })
-  }, [mode, isTouch])
+  }, [isTouch])
 
-  const useHover = mode === "hover" || (mode === "scroll" && !isTouch)
-
-  const hoverHandlers = useHover
+  const hoverHandlers = !isTouch
     ? {
         onMouseEnter: () => {
           const el = videoRef.current
