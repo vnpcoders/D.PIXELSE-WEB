@@ -1,71 +1,77 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import Footer from "../components/Footer.jsx"
 import Lightbox from "../components/Lightbox.jsx"
+import Reveal from "../components/Reveal.jsx"
 import { supabase } from "../lib/supabaseClient.js"
 
-const SLIDE_TIME = 5000
-
-function HeroSlider({ slides }) {
-  const [index, setIndex] = useState(0)
+function HeroReels({ reels }) {
+  const [current, setCurrent] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const videoRefs = useRef([])
 
   useEffect(() => {
-    if (slides.length < 2) return
-    const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), SLIDE_TIME)
-    return () => clearInterval(t)
-  }, [slides.length])
+    const v = videoRefs.current[current]
+    if (v) {
+      v.currentTime = 0
+      v.play().catch(() => {})
+    }
+  }, [current])
 
-  if (slides.length === 0) {
+  if (reels.length === 0) {
     return (
-      <div className="hero glass" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p>Abhi tak koi reel add nahi hui — admin panel se add karein.</p>
+      <div className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#e7ded2" }}>Abhi tak koi reel add nahi hui — admin panel se add karein.</p>
       </div>
     )
   }
 
-  const slide = slides[index]
-
   return (
     <div className="hero">
-      <motion.div
-        key={index}
-        className="slide"
-        initial={{ opacity: 0, scale: 1.06 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {slide.type === "video" || slide.type === "reel" ? (
-          <video src={slide.url} autoPlay muted loop playsInline />
-        ) : (
-          <img src={slide.url} alt={slide.caption} />
-        )}
-      </motion.div>
-
       <div className="slide-dots">
-        {slides.map((_, i) => (
-          <button key={i} className={i === index ? "active" : ""} onClick={() => setIndex(i)} aria-label={`Go to slide ${i + 1}`}>
-            {i === index && (
-              <motion.span
-                className="fill"
-                key={index}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: SLIDE_TIME / 1000, ease: "linear" }}
-              />
-            )}
+        {reels.map((_, i) => (
+          <button key={i} aria-label={`Reel ${i + 1}`}>
+            <span
+              className="fill"
+              style={{
+                transform: `scaleX(${i < current ? 1 : i === current ? progress : 0})`,
+                transformOrigin: "left",
+              }}
+            />
           </button>
         ))}
       </div>
 
-      <div className="hero-copy">
-        <div>
-          <span className="slide-tag">Featured</span>
-          <h1>{slide.caption || "Recent work"}</h1>
+      {reels.map((r, i) => (
+        <div className={`slide ${i === current ? "active" : ""}`} key={r.id}>
+          <video
+            ref={(el) => (videoRefs.current[i] = el)}
+            muted
+            playsInline
+            src={r.url}
+            onTimeUpdate={(e) => {
+              if (i === current && e.target.duration) {
+                setProgress(e.target.currentTime / e.target.duration)
+              }
+            }}
+            onEnded={() => setCurrent((c) => (c + 1) % reels.length)}
+          />
         </div>
-        <Link href="/contact" className="btn btn-solid">Book a shoot</Link>
+      ))}
+
+      <div className="hero-copy">
+        <span className="slide-tag">D.PIXELSS Studio</span>
+        <h1>{reels[current]?.caption || "D.PIXELSS Photography"}</h1>
+        <hr className="divider" />
+        <p className="hero-sub">
+          We capture more than photographs — we capture emotions, stories, and
+          unforgettable moments.
+        </p>
+        <div className="hero-cta">
+          <Link href="/contact" className="btn btn-solid">Book a shoot</Link>
+        </div>
       </div>
     </div>
   )
@@ -82,7 +88,7 @@ export default function Home() {
     async function load() {
       const [reelsRes, photosRes, videosRes] = await Promise.all([
         supabase.from("media").select("*").eq("type", "reel").order("created_at", { ascending: false }).limit(5),
-        supabase.from("media").select("*").eq("type", "photo").order("created_at", { ascending: false }).limit(4),
+        supabase.from("media").select("*").eq("type", "photo").order("created_at", { ascending: false }).limit(6),
         supabase.from("media").select("*").eq("type", "video").order("created_at", { ascending: false }).limit(3),
       ])
       setReels(reelsRes.data || [])
@@ -95,36 +101,44 @@ export default function Home() {
 
   return (
     <>
-      <HeroSlider slides={reels} />
+      <HeroReels reels={reels} />
 
-      <div className="section-head">
-        <h2>Recent photography</h2>
-        <Link href="/photo" className="btn">View all photos</Link>
-      </div>
-      {!loading && photos.length === 0 && <p style={{ marginTop: 20 }}>Abhi tak koi photo add nahi hui.</p>}
-      <div className="grid grid-mosaic">
-        {photos.map((p) => (
-          <div className="card" key={p.id} onClick={() => setActive({ src: p.url, caption: p.caption, type: "photo" })}>
-            <img src={p.url} alt={p.caption} loading="lazy" />
-            <div className="card-caption">{p.caption}</div>
-          </div>
-        ))}
-      </div>
+      <section>
+        <Reveal as="div" className="section-head">
+          <h2>Recent Photography</h2>
+          <Link href="/photo" className="view-all">VIEW ALL PHOTOS</Link>
+        </Reveal>
+        {!loading && photos.length === 0 && <p className="empty-note">Abhi tak koi photo add nahi hui.</p>}
+        <div className="grid grid-mosaic">
+          {photos.map((p, i) => (
+            <Reveal key={p.id} delay={i * 80}>
+              <div className="card" onClick={() => setActive({ src: p.url, caption: p.caption, type: "photo" })}>
+                <img src={p.url} alt={p.caption} loading="lazy" />
+                <div className="card-caption">{p.caption}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-      <div className="section-head">
-        <h2>Latest films</h2>
-        <Link href="/video" className="btn">View all videos</Link>
-      </div>
-      {!loading && videos.length === 0 && <p style={{ marginTop: 20 }}>Abhi tak koi video add nahi hui.</p>}
-      <div className="grid grid-3">
-        {videos.map((v) => (
-          <div className="card" key={v.id} onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
-            <video src={v.url} muted preload="metadata" />
-            <span className="play-badge glass">▶</span>
-            <div className="card-caption">{v.caption}</div>
-          </div>
-        ))}
-      </div>
+      <section className="films-section">
+        <Reveal as="div" className="section-head">
+          <h2>Latest Films</h2>
+          <Link href="/video" className="view-all">VIEW ALL VIDEOS</Link>
+        </Reveal>
+        {!loading && videos.length === 0 && <p className="empty-note" style={{ color: "#cfc7ba" }}>Abhi tak koi video add nahi hui.</p>}
+        <div className="grid grid-3">
+          {videos.map((v, i) => (
+            <Reveal key={v.id} delay={i * 80}>
+              <div className="card" onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
+                <video src={v.url} muted preload="metadata" />
+                <span className="play-badge">▶</span>
+                <div className="card-caption">{v.caption}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
       <Footer />
       <Lightbox item={active} onClose={() => setActive(null)} />
