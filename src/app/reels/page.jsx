@@ -38,7 +38,7 @@ export default function Reels() {
         <div className="grid reel-strip">
           {reels.map((r, i) => (
             <Reveal key={r.id} delay={(i % 6) * 80}>
-              <ReelCard reel={r} mode="hover" onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "reel" })} />
+              <ReelCard reel={r} onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "reel" })} />
             </Reveal>
           ))}
         </div>
