@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Footer from "../../components/Footer.jsx"
 import Lightbox from "../../components/Lightbox.jsx"
 import Reveal from "../../components/Reveal.jsx"
+import VideoCard from "../../components/VideoCard.jsx"
 import { supabase } from "../../lib/supabaseClient.js"
 
 export default function Video() {
@@ -24,11 +25,7 @@ export default function Video() {
     <>
       <section className="films-section" style={{ paddingBottom: 0 }}>
         <Reveal as="div" style={{ textAlign: "center", marginBottom: 56 }}>
-          <div className="section-label">Portfolio</div>
           <h1 style={{ fontSize: "clamp(32px, 5vw, 52px)", color: "#F1ECE3" }}>Films &amp; Videos</h1>
-          <p style={{ maxWidth: 480, margin: "16px auto 0", color: "#cfc7ba" }}>
-            Wedding highlight films, brand videos and behind-the-scenes stories.
-          </p>
         </Reveal>
 
         {!loading && videos.length === 0 && <p className="empty-note" style={{ color: "#cfc7ba" }}>Abhi tak koi video add nahi hui — admin panel se add karein.</p>}
@@ -36,16 +33,7 @@ export default function Video() {
         <div className="grid grid-3">
           {videos.map((v, i) => (
             <Reveal key={v.id} delay={(i % 6) * 80}>
-              <div className="card" onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
-                <video
-                  src={v.url}
-                  muted
-                  preload="auto"
-                  onLoadedData={(e) => { if (e.target.currentTime === 0) e.target.currentTime = 0.01 }}
-                />
-                <span className="play-badge">▶</span>
-                <div className="card-caption">{v.caption}</div>
-              </div>
+              <VideoCard video={v} onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "video" })} />
             </Reveal>
           ))}
         </div>
