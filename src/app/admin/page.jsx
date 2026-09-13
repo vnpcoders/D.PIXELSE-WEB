@@ -23,7 +23,7 @@ function LoginForm({ onLoggedIn }) {
   }
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div className="admin-shell" style={{ display: "flex", justifyContent: "center" }}>
       <form className="form-card glass" style={{ maxWidth: 380, width: "100%" }} onSubmit={onSubmit}>
         <h2 style={{ marginBottom: 20, fontSize: "1.4rem" }}>Admin Login</h2>
         <div className="field">
@@ -307,17 +307,17 @@ function Dashboard() {
   }
 
   return (
-    <div>
-      <div className="section-head" style={{ marginTop: 0 }}>
+    <div className="admin-shell">
+      <div className="admin-head">
         <h1 style={{ fontFamily: "var(--serif)", fontSize: "2rem" }}>Admin Panel</h1>
         <button className="btn" onClick={signOut}>Logout</button>
       </div>
 
-      <div style={{ display: "flex", gap: 10, margin: "24px 0" }}>
-        <button className={`btn ${tab === "media" ? "btn-solid" : ""}`} onClick={() => setTab("media")}>
+      <div className="admin-tabs">
+        <button className={tab === "media" ? "active" : ""} onClick={() => setTab("media")}>
           Media
         </button>
-        <button className={`btn ${tab === "leads" ? "btn-solid" : ""}`} onClick={() => setTab("leads")}>
+        <button className={tab === "leads" ? "active" : ""} onClick={() => setTab("leads")}>
           Contact leads
         </button>
       </div>
@@ -345,6 +345,6 @@ export default function AdminPage() {
   }, [])
 
   if (session === undefined) return null
-  if (!session) return <LoginForm onLoggedIn={() => { }} />
+  if (!session) return <LoginForm onLoggedIn={() => {}} />
   return <Dashboard />
 }
