@@ -3,28 +3,41 @@
 import { useEffect, useState } from "react"
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState("dark")
+  const [theme, setTheme] = useState("light")
 
   useEffect(() => {
-    const current = document.documentElement.getAttribute("data-theme") || "dark"
+    const current = document.documentElement.getAttribute("data-theme") || "light"
     setTheme(current)
   }, [])
 
-  const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark"
-    document.documentElement.setAttribute("data-theme", next)
+  const choose = (next) => {
+    if (next === "light") {
+      document.documentElement.removeAttribute("data-theme")
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark")
+    }
     localStorage.setItem("theme", next)
     setTheme(next)
   }
 
   return (
-    <button
-      className="theme-toggle"
-      onClick={toggle}
-      aria-label="Toggle light/dark theme"
-      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-    >
-      {theme === "dark" ? "☀️" : "🌙"}
-    </button>
+    <div className="theme-toggle" role="group" aria-label="Toggle light/dark theme">
+      <button
+        className={`dot ${theme === "light" ? "active" : ""}`}
+        onClick={() => choose("light")}
+        aria-label="Light mode"
+        title="Light mode"
+      >
+        ☀
+      </button>
+      <button
+        className={`dot ${theme === "dark" ? "active" : ""}`}
+        onClick={() => choose("dark")}
+        aria-label="Dark mode"
+        title="Dark mode"
+      >
+        ☾
+      </button>
+    </div>
   )
 }
