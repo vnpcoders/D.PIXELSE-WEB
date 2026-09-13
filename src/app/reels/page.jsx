@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Footer from "../../components/Footer.jsx"
 import Lightbox from "../../components/Lightbox.jsx"
 import Reveal from "../../components/Reveal.jsx"
+import ReelCard from "../../components/ReelCard.jsx"
 import { supabase } from "../../lib/supabaseClient.js"
 
 export default function Reels() {
@@ -34,14 +35,10 @@ export default function Reels() {
 
         {!loading && reels.length === 0 && <p className="empty-note">Abhi tak koi reel add nahi hui — admin panel se add karein.</p>}
 
-        <div className="reel-strip">
+        <div className="grid reel-strip">
           {reels.map((r, i) => (
             <Reveal key={r.id} delay={(i % 6) * 80}>
-              <div className="card reel-card" onClick={() => setActive({ src: r.url, caption: r.caption, type: "reel" })}>
-                <video src={r.url} muted preload="metadata" />
-                <span className="play-badge">▶</span>
-                <div className="card-caption">{r.caption}</div>
-              </div>
+              <ReelCard reel={r} onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "reel" })} />
             </Reveal>
           ))}
         </div>
