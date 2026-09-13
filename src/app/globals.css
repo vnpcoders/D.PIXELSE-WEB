@@ -18,6 +18,7 @@
   --input-bg: rgba(42, 36, 30, 0.04);
   --serif: "Cormorant Garamond", serif;
   --sans: "Jost", sans-serif;
+  --nav-text: #F1ECE3;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -108,7 +109,7 @@ p { color: var(--text-muted); line-height: 1.8; }
   justify-content: space-between;
   padding: 22px 48px;
   background: var(--brown);
-  color: var(--bg);
+  color: var(--nav-text);
   transition: background-color 0.5s;
 }
 .brand {
@@ -127,7 +128,7 @@ p { color: var(--text-muted); line-height: 1.8; }
   padding-bottom: 3px;
   font-size: 13px;
   letter-spacing: 0.08em;
-  color: var(--bg);
+  color: var(--nav-text);
   opacity: 0.85;
   transition: opacity 0.3s ease;
 }
@@ -151,7 +152,7 @@ p { color: var(--text-muted); line-height: 1.8; }
   border-radius: 50%;
   border: 1px solid rgba(241,236,227,0.25);
   background: transparent;
-  color: var(--bg);
+  color: var(--nav-text);
   align-items: center;
   justify-content: center;
 }
@@ -175,7 +176,7 @@ p { color: var(--text-muted); line-height: 1.8; }
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: var(--bg);
+  color: var(--nav-text);
   opacity: 0.6;
   background: transparent;
   border: none;
@@ -408,13 +409,9 @@ section, .content-section { padding: 90px 48px; }
 /* Reels — vertical stack */
 .reels-section { background: var(--bg-2); transition: background-color 0.5s; }
 .reel-strip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-  max-width: 340px;
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
 }
+.grid-reels { grid-template-columns: repeat(4, 1fr); }
 .reel-card {
   width: 100%;
   aspect-ratio: 9/16;
@@ -621,6 +618,7 @@ select option { color: #16213a; background: #ffffff; }
 /* ---------- Responsive ---------- */
 @media (max-width: 880px) {
   .grid-mosaic, .grid-3, .films-section .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .reel-strip, .grid-reels { grid-template-columns: repeat(3, 1fr); }
   .contact-row { gap: 30px; }
 }
 
@@ -644,5 +642,6 @@ select option { color: #16213a; background: #ffffff; }
   .nav-links a { text-align: center; }
   .nav-toggle { display: flex; }
   .grid-mosaic, .grid-3, .films-section .grid-3 { grid-template-columns: 1fr; }
+  .reel-strip, .grid-reels { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .admin-head { flex-direction: column; align-items: flex-start; gap: 14px; }
 }
