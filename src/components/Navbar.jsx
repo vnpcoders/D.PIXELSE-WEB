@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion } from "framer-motion"
 import ThemeToggle from "./ThemeToggle.jsx"
 
 const links = [
@@ -17,31 +16,16 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const linksRef = useRef(null)
-  const [pill, setPill] = useState({ left: 0, width: 0 })
 
-  useEffect(() => {
-    const active = linksRef.current?.querySelector("a.active")
-    if (active) {
-      setPill({ left: active.offsetLeft, width: active.offsetWidth })
-    }
-    setOpen(false)
-  }, [pathname])
+  useEffect(() => { setOpen(false) }, [pathname])
 
   return (
-    <header className="navbar glass">
+    <header className="navbar">
       <div className="brand">
-        D.PIXELS
+        D<span>.</span>PIXELSS <em style={{ fontStyle: "italic", fontSize: 14, marginLeft: 6, opacity: 0.7 }}>Photography</em>
       </div>
 
-      <nav className={`nav-links ${open ? "open" : ""}`} ref={linksRef}>
-        {pill.width > 0 && (
-          <motion.span
-            className="nav-pill"
-            animate={{ left: pill.left, width: pill.width }}
-            transition={{ type: "spring", stiffness: 380, damping: 32 }}
-          />
-        )}
+      <nav className={`nav-links ${open ? "open" : ""}`}>
         {links.map((l) => {
           const isActive = l.to === "/" ? pathname === "/" : pathname.startsWith(l.to)
           return (
@@ -54,7 +38,7 @@ export default function Navbar() {
 
       <div style={{ display: "flex", alignItems: "center" }}>
         <ThemeToggle />
-        <button className="nav-toggle" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
+        <button className="nav-toggle" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu" style={{ marginLeft: 10 }}>
           {open ? "✕" : "☰"}
         </button>
       </div>
