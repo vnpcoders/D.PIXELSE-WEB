@@ -6,11 +6,11 @@ import Footer from "../components/Footer.jsx"
 import Lightbox from "../components/Lightbox.jsx"
 import Reveal from "../components/Reveal.jsx"
 import ReelCard from "../components/ReelCard.jsx"
+import VideoCard from "../components/VideoCard.jsx"
 import { supabase } from "../lib/supabaseClient.js"
 
 function HeroReels({ reels }) {
   const [current, setCurrent] = useState(0)
-  const [progress, setProgress] = useState(0)
   const videoRefs = useRef([])
 
   useEffect(() => {
@@ -31,20 +31,6 @@ function HeroReels({ reels }) {
 
   return (
     <div className="hero">
-      <div className="slide-dots">
-        {reels.map((_, i) => (
-          <button key={i} aria-label={`Reel ${i + 1}`}>
-            <span
-              className="fill"
-              style={{
-                transform: `scaleX(${i < current ? 1 : i === current ? progress : 0})`,
-                transformOrigin: "left",
-              }}
-            />
-          </button>
-        ))}
-      </div>
-
       {reels.map((r, i) => (
         <div className={`slide ${i === current ? "active" : ""}`} key={r.id}>
           <video
@@ -53,20 +39,13 @@ function HeroReels({ reels }) {
             playsInline
             preload="auto"
             src={r.url}
-            onTimeUpdate={(e) => {
-              if (i === current && e.target.duration) {
-                setProgress(e.target.currentTime / e.target.duration)
-              }
-            }}
             onEnded={() => setCurrent((c) => (c + 1) % reels.length)}
           />
         </div>
       ))}
 
       <div className="hero-copy">
-        <span className="slide-tag">D.PIXELSS Studio</span>
-        <h1>{reels[current]?.caption || "D.PIXELSS Photography"}</h1>
-        <hr className="divider" />
+        <h1>{reels[current]?.caption || "D.PIXELSS"}</h1>
         <p className="hero-sub">
           We capture more than photographs — we capture emotions, stories, and
           unforgettable moments.
@@ -104,7 +83,7 @@ export default function Home() {
 
       <section>
         <Reveal as="div" className="section-head">
-          <h2>Recent Photography</h2>
+          <h2>Candid</h2>
           <Link href="/photo" className="view-all">VIEW ALL PHOTOS</Link>
         </Reveal>
         {!loading && photos.length === 0 && <p className="empty-note">Abhi tak koi photo add nahi hui.</p>}
@@ -122,23 +101,14 @@ export default function Home() {
 
       <section className="films-section">
         <Reveal as="div" className="section-head">
-          <h2>Latest Films</h2>
+          <h2>Films</h2>
           <Link href="/video" className="view-all">VIEW ALL VIDEOS</Link>
         </Reveal>
         {!loading && videos.length === 0 && <p className="empty-note" style={{ color: "#cfc7ba" }}>Abhi tak koi video add nahi hui.</p>}
         <div className="grid grid-3">
           {videos.map((v, i) => (
             <Reveal key={v.id} delay={i * 80}>
-              <div className="card" onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
-                <video
-                  src={v.url}
-                  muted
-                  preload="auto"
-                  onLoadedData={(e) => { if (e.target.currentTime === 0) e.target.currentTime = 0.01 }}
-                />
-                <span className="play-badge">▶</span>
-                <div className="card-caption">{v.caption}</div>
-              </div>
+              <VideoCard video={v} onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "video" })} />
             </Reveal>
           ))}
         </div>
