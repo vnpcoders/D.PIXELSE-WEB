@@ -37,7 +37,12 @@ export default function Video() {
           {videos.map((v, i) => (
             <Reveal key={v.id} delay={(i % 6) * 80}>
               <div className="card" onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
-                <video src={v.url} muted preload="metadata" />
+                <video
+                  src={v.url}
+                  muted
+                  preload="auto"
+                  onLoadedData={(e) => { if (e.target.currentTime === 0) e.target.currentTime = 0.01 }}
+                />
                 <span className="play-badge">▶</span>
                 <div className="card-caption">{v.caption}</div>
               </div>
