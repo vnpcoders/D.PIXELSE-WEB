@@ -642,6 +642,7 @@ select option { color: #16213a; background: #ffffff; }
   .nav-links a { text-align: center; }
   .nav-toggle { display: flex; }
   .grid-mosaic, .grid-3, .films-section .grid-3 { grid-template-columns: 1fr; }
-  .reel-strip, .grid-reels { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .reel-strip { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid-reels { grid-template-columns: 1fr; gap: 14px; }
   .admin-head { flex-direction: column; align-items: flex-start; gap: 14px; }
 }
