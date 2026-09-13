@@ -59,7 +59,7 @@ export default function Footer() {
         <Reveal className="contact-row" delay={80}>
           <div><span>Phone</span>+91 7000189652</div>
           <div><span>Email</span>Rakeshpathak48808@gmail.com</div>
-          <div><span>Studio</span>Dewas, Madhya Pradesh</div>
+          <div>Dewas, Madhya Pradesh</div>
         </Reveal>
         <Reveal className="social-row" delay={140}>
           {socialLinks.map((s) => (
@@ -72,7 +72,7 @@ export default function Footer() {
       </section>
 
       <footer className="footer-bar">
-        © {new Date().getFullYear()} D.PIXELSS Studio
+        © {new Date().getFullYear()} D.PIXELSS — Created by VNP Coders
       </footer>
     </>
   )
