@@ -22,7 +22,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="brand">
-        D<span>.</span>PIXELSS <em style={{ fontStyle: "italic", fontSize: 14, marginLeft: 6, opacity: 0.7 }}>Photography</em>
+        D<span>.</span>PIXELSS
       </div>
 
       <nav className={`nav-links ${open ? "open" : ""}`}>
