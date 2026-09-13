@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react"
 
-export default function ReelCard({ reel, onOpen }) {
+export default function ReelCard({ reel, onOpen, mode = "scroll" }) {
   const videoRef = useRef(null)
   const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
+    if (mode !== "scroll") return
     const el = videoRef.current
     if (!el) return
     const io = new IntersectionObserver(
@@ -21,10 +22,27 @@ export default function ReelCard({ reel, onOpen }) {
     )
     io.observe(el)
     return () => io.disconnect()
-  }, [])
+  }, [mode])
+
+  const hoverHandlers =
+    mode === "hover"
+      ? {
+          onMouseEnter: () => {
+            const el = videoRef.current
+            if (el) {
+              el.currentTime = 0
+              el.play().catch(() => {})
+            }
+          },
+          onMouseLeave: () => {
+            const el = videoRef.current
+            if (el) el.pause()
+          },
+        }
+      : {}
 
   return (
-    <div className="card reel-card" onClick={() => onOpen?.(reel)}>
+    <div className="card reel-card" onClick={() => onOpen?.(reel)} {...hoverHandlers}>
       <video
         ref={videoRef}
         src={reel.url}
