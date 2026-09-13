@@ -5,6 +5,7 @@ import Link from "next/link"
 import Footer from "../components/Footer.jsx"
 import Lightbox from "../components/Lightbox.jsx"
 import Reveal from "../components/Reveal.jsx"
+import ReelCard from "../components/ReelCard.jsx"
 import { supabase } from "../lib/supabaseClient.js"
 
 function HeroReels({ reels }) {
@@ -18,7 +19,7 @@ function HeroReels({ reels }) {
       v.currentTime = 0
       v.play().catch(() => {})
     }
-  }, [current])
+  }, [current, reels.length])
 
   if (reels.length === 0) {
     return (
@@ -50,6 +51,7 @@ function HeroReels({ reels }) {
             ref={(el) => (videoRefs.current[i] = el)}
             muted
             playsInline
+            preload="auto"
             src={r.url}
             onTimeUpdate={(e) => {
               if (i === current && e.target.duration) {
@@ -69,9 +71,6 @@ function HeroReels({ reels }) {
           We capture more than photographs — we capture emotions, stories, and
           unforgettable moments.
         </p>
-        <div className="hero-cta">
-          <Link href="/contact" className="btn btn-solid">Book a shoot</Link>
-        </div>
       </div>
     </div>
   )
@@ -131,11 +130,29 @@ export default function Home() {
           {videos.map((v, i) => (
             <Reveal key={v.id} delay={i * 80}>
               <div className="card" onClick={() => setActive({ src: v.url, caption: v.caption, type: "video" })}>
-                <video src={v.url} muted preload="metadata" />
+                <video
+                  src={v.url}
+                  muted
+                  preload="auto"
+                  onLoadedData={(e) => { if (e.target.currentTime === 0) e.target.currentTime = 0.01 }}
+                />
                 <span className="play-badge">▶</span>
                 <div className="card-caption">{v.caption}</div>
               </div>
             </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <Reveal as="div" className="section-head">
+          <h2>Reels</h2>
+          <Link href="/reels" className="view-all">VIEW ALL REELS</Link>
+        </Reveal>
+        {!loading && reels.length === 0 && <p className="empty-note">Abhi tak koi reel add nahi hui.</p>}
+        <div className="grid grid-reels">
+          {reels.slice(0, 4).map((r) => (
+            <ReelCard key={r.id} reel={r} onOpen={(item) => setActive({ src: item.url, caption: item.caption, type: "reel" })} />
           ))}
         </div>
       </section>
