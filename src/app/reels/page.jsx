@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Footer from "../../components/Footer.jsx"
 import Lightbox from "../../components/Lightbox.jsx"
+import Reveal from "../../components/Reveal.jsx"
 import { supabase } from "../../lib/supabaseClient.js"
 
 export default function Reels() {
@@ -21,23 +22,30 @@ export default function Reels() {
 
   return (
     <>
-      <span className="section-label">Portfolio</span>
-      <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}>Reels</h1>
-      <p style={{ maxWidth: 560, marginTop: 12 }}>
-        Short vertical stories from recent shoots — made for Instagram and YouTube Shorts.
-      </p>
+      <section className="reels-section" style={{ paddingBottom: 0 }}>
+        <Reveal as="div" style={{ textAlign: "center", marginBottom: 56 }}>
+          <div className="section-label">Portfolio</div>
+          <h1 style={{ fontSize: "clamp(32px, 5vw, 52px)" }}>Reels</h1>
+          <p style={{ maxWidth: 480, margin: "16px auto 0" }}>
+            Short vertical stories from recent shoots — made for Instagram and
+            YouTube Shorts.
+          </p>
+        </Reveal>
 
-      {!loading && reels.length === 0 && <p style={{ marginTop: 30 }}>Abhi tak koi reel add nahi hui — admin panel se add karein.</p>}
+        {!loading && reels.length === 0 && <p className="empty-note">Abhi tak koi reel add nahi hui — admin panel se add karein.</p>}
 
-      <div className="reel-strip" style={{ marginTop: 40 }}>
-        {reels.map((r) => (
-          <div className="card reel-card" key={r.id} onClick={() => setActive({ src: r.url, caption: r.caption, type: "reel" })}>
-            <video src={r.url} muted preload="metadata" />
-            <span className="play-badge glass">▶</span>
-            <div className="card-caption">{r.caption}</div>
-          </div>
-        ))}
-      </div>
+        <div className="reel-strip">
+          {reels.map((r, i) => (
+            <Reveal key={r.id} delay={(i % 6) * 80}>
+              <div className="card reel-card" onClick={() => setActive({ src: r.url, caption: r.caption, type: "reel" })}>
+                <video src={r.url} muted preload="metadata" />
+                <span className="play-badge">▶</span>
+                <div className="card-caption">{r.caption}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
       <Footer />
       <Lightbox item={active} onClose={() => setActive(null)} />
