@@ -1,45 +1,39 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { registerAutoplayVideo } from "../lib/centerAutoplay.js"
 
 export default function ReelCard({ reel, onOpen, mode = "scroll" }) {
   const videoRef = useRef(null)
+  const [isTouch, setIsTouch] = useState(false)
   const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
-    if (mode !== "scroll") return
-    const el = videoRef.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-          el.play().catch(() => {})
-        } else {
-          el.pause()
-        }
-      },
-      { threshold: [0, 0.6, 1] }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [mode])
+    setIsTouch(!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+  }, [])
 
-  const hoverHandlers =
-    mode === "hover"
-      ? {
-          onMouseEnter: () => {
-            const el = videoRef.current
-            if (el) {
-              el.currentTime = 0
-              el.play().catch(() => {})
-            }
-          },
-          onMouseLeave: () => {
-            const el = videoRef.current
-            if (el) el.pause()
-          },
-        }
-      : {}
+  useEffect(() => {
+    if (mode !== "scroll" || !isTouch) return
+    return registerAutoplayVideo(videoRef.current, { sound: false })
+  }, [mode, isTouch])
+
+  const useHover = mode === "hover" || (mode === "scroll" && !isTouch)
+
+  const hoverHandlers = useHover
+    ? {
+        onMouseEnter: () => {
+          const el = videoRef.current
+          if (el) {
+            el.currentTime = 0
+            el.play().catch(() => {})
+          }
+        },
+        onMouseLeave: () => {
+          const el = videoRef.current
+          if (el) el.pause()
+        },
+      }
+    : {}
 
   return (
     <div className="card reel-card" onClick={() => onOpen?.(reel)} {...hoverHandlers}>
